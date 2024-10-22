@@ -23,16 +23,20 @@ bpoints = [deque(maxlen=1024)]
 gpoints = [deque(maxlen=1024)]
 rpoints = [deque(maxlen=1024)]
 ypoints = [deque(maxlen=1024)]
+ppoints = [deque(maxlen=1024)]
+opoints = [deque(maxlen=1024)]
 
-#assigning index values
+#Assigning index values
 blue_index = 0
 green_index = 0
 red_index = 0
 yellow_index = 0
+purple_index = 0
+orange_index = 0
 
 kernel = np.ones((5,5),np.uint8)
 
-colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (0, 255, 255)]
+colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (0, 255, 255), (128, 0, 128), (0, 165, 255)]
 colorIndex = 0
 
 #starting the painting window setup
@@ -43,11 +47,17 @@ paintWindow = cv2.rectangle(paintWindow, (275,1), (370,65), colors[1], -1)
 paintWindow = cv2.rectangle(paintWindow, (390,1), (485,65), colors[2], -1)
 paintWindow = cv2.rectangle(paintWindow, (505,1), (600,65), colors[3], -1)
 
+paintWindow = cv2.rectangle(paintWindow, (40, 400), (140, 465), colors[4], -1)
+paintWindow = cv2.rectangle(paintWindow, (160, 400), (255, 465), colors[5], -1)
+
 cv2.putText(paintWindow, "CLEAR", (49, 33), cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 0, 0), 2, cv2.LINE_AA)
 cv2.putText(paintWindow, "BLUE", (185, 33), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
 cv2.putText(paintWindow, "GREEN", (298, 33), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
 cv2.putText(paintWindow, "RED", (420, 33), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
 cv2.putText(paintWindow, "YELLOW", (520, 33), cv2.FONT_ITALIC, 0.5, (150,150,150), 2, cv2.LINE_AA)
+
+cv2.putText(paintWindow, "PURPLE", (55, 433), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+cv2.putText(paintWindow, "ORANGE", (175, 433), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
 
 cv2.namedWindow('Paint', cv2.WINDOW_AUTOSIZE)
 
@@ -73,19 +83,26 @@ while True:
     frame = cv2.rectangle(frame, (275,1), (370,65), colors[1], -1)
     frame = cv2.rectangle(frame, (390,1), (485,65), colors[2], -1)
     frame = cv2.rectangle(frame, (505,1), (600,65), colors[3], -1)
+
+    frame = cv2.rectangle(frame, (40, 400), (140, 465), colors[4], -1)
+    frame = cv2.rectangle(frame, (160, 400), (255, 465), colors[5], -1)
+
+
     cv2.putText(frame, "CLEAR ALL", (49, 33), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
     cv2.putText(frame, "BLUE", (185, 33), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
     cv2.putText(frame, "GREEN", (298, 33), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
     cv2.putText(frame, "RED", (420, 33), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
     cv2.putText(frame, "YELLOW", (520, 33), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (120,130,150), 2, cv2.LINE_AA)
+    cv2.putText(frame, "PURPLE", (55, 433), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(frame, "ORANGE", (175, 433), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+
 
     Mask = cv2.inRange(hsv, Lower_hsv, Upper_hsv)
     Mask = cv2.erode(Mask, kernel, iterations=1)
     Mask = cv2.morphologyEx(Mask, cv2.MORPH_OPEN, kernel)
     Mask = cv2.dilate(Mask, kernel, iterations=1)
 
-    cnts,_ = cv2.findContours(Mask.copy(), cv2.RETR_EXTERNAL,
-    	cv2.CHAIN_APPROX_SIMPLE)
+    cnts,_ = cv2.findContours(Mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     center = None
 
     # Ifthe contours are formed
@@ -107,11 +124,16 @@ while True:
                 gpoints = [deque(maxlen=512)]
                 rpoints = [deque(maxlen=512)]
                 ypoints = [deque(maxlen=512)]
+                ppoints = [deque(maxlen=512)]
+                opoints = [deque(maxlen=512)]
+                
 
                 blue_index = 0
                 green_index = 0
                 red_index = 0
                 yellow_index = 0
+                purple_index = 0
+                orange_index = 0
 
                 paintWindow[67:,:,:] = 255
             elif 160 <= center[0] <= 255:
@@ -122,6 +144,15 @@ while True:
                     colorIndex = 2 # Red
             elif 505 <= center[0] <= 600:
                     colorIndex = 3 # Yellow
+            elif 620 <= center[0] <= 715:
+                colorIndex = 4  # Purple
+            elif 735 <= center[0] <= 830:
+                colorIndex = 5  # Orange
+        elif 400 <= center[1] <= 465:
+            if 40 <= center[0] <= 140:
+                colorIndex = 4  # Purple
+            elif 160 <= center[0] <= 255:
+                colorIndex = 5  # Orange        
         else :
             if colorIndex == 0:
                 bpoints[blue_index].appendleft(center)
@@ -131,6 +162,10 @@ while True:
                 rpoints[red_index].appendleft(center)
             elif colorIndex == 3:
                 ypoints[yellow_index].appendleft(center)
+            elif colorIndex == 4:
+                ppoints[purple_index].appendleft(center)
+            elif colorIndex == 5:
+                opoints[orange_index].appendleft(center)
     else:
         bpoints.append(deque(maxlen=512))
         blue_index += 1
@@ -140,8 +175,12 @@ while True:
         red_index += 1
         ypoints.append(deque(maxlen=512))
         yellow_index += 1
+        ppoints.append(deque(maxlen=512))
+        purple_index += 1
+        opoints.append(deque(maxlen=512))
+        orange_index += 1
 
-    points = [bpoints, gpoints, rpoints, ypoints]
+    points = [bpoints, gpoints, rpoints, ypoints, ppoints, opoints]
     for i in range(len(points)):
         for j in range(len(points[i])):
             for k in range(1, len(points[i][j])):
@@ -150,11 +189,9 @@ while True:
                 cv2.line(frame, points[i][j][k - 1], points[i][j][k], colors[i], 2)
                 cv2.line(paintWindow, points[i][j][k - 1], points[i][j][k], colors[i], 2)
 
-
     cv2.imshow("Tracking", frame)
     cv2.imshow("Paint", paintWindow)
-    cv2.imshow("mask",Mask)
-
+    cv2.imshow("mask", Mask)
 
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
@@ -162,3 +199,4 @@ while True:
 # Release the camera and all resources
 cap.release()
 cv2.destroyAllWindows()
+
