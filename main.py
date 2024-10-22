@@ -199,4 +199,3 @@ while True:
 # Release the camera and all resources
 cap.release()
 cv2.destroyAllWindows()
-
